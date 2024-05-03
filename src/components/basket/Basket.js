@@ -1,31 +1,33 @@
 import React from 'react';
-import Navbar from "../header/Navbar";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {removeBusketProduct} from "../features/postSlice";
 
 const Basket = () => {
-    const productBusket = useSelector(state => state.busketReducer.busket)
-    const delate = (id_deleate) => {
-        console.log(id_deleate)
+    const productBusket = useSelector(state => state.postSlice.buskets)
+    const dispatch = useDispatch()
+    const deleteProduct = (productRemove) => {
+        dispatch(removeBusketProduct(productRemove))
     }
     return (
-        <div>
-            <Navbar/>
-            <div className='main-card'>
-                {
-                    productBusket?.map((product) => (
-                        <div className='product' key={product._id}>
-                            <img src={product.picture} alt=""/>
-                            <strong>{product.category}</strong>
-                            <h2>{product.name}</h2>
-                            <span>{product.description}</span>
-                            <div className='shop'>
-                                <h1>Цена:{product.price}</h1>
-                                <button onClick={() => delate(product)}>remove</button>
-                            </div>
+        <div style={{width:'1000px' ,gap:'20px',marginTop:'150px', display:'flex', justifyContent:'space-around', flexWrap:'wrap', margin:'20px auto'}}>
+            {
+                productBusket?(
+                    productBusket.map((item) => (
+                        <div style={{display:'flex',alignItems:'center', justifyContent:'space-between',width:'200px', backgroundColor:'silver', height:'250px', flexDirection:'column'}} key={item.id}>
+                            <img style={{width:'150px'}} src={item.images[0]} alt=""/>
+                            <span>{item.title}</span>
+                            <h5>Price:{item.price}$</h5>
+                            <button onClick={() => deleteProduct(item.id)}>Убрать с Busket</button>
                         </div>
                     ))
-                }
-            </div>
+                ):(
+                    <div>
+                        <h2>
+                            LOADING...
+                        </h2>
+                    </div>
+                )
+            }
         </div>
     );
 };

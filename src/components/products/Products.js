@@ -1,37 +1,49 @@
-import React, {useEffect} from 'react';
-import Navbar from "../header/Navbar";
-import {useDispatch, useSelector} from "react-redux";
-import {fetchData} from "../../store/products/actions/productGetActions";
-import './product.css'
-import {actionBusket} from "../../store/products/busketReducer/actionBusket";
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from "react-redux";
+import {addProductBusket, decremenet, getDataProduct, increment, removeBusketProduct} from "../features/postSlice";
+
 const Products = () => {
-    const products = useSelector((state) => state.productReducer.data)
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
+    const [productCounts, setProductCounts] = useState({});
+    const products = useSelector(state => state.postSlice.products);
+
     useEffect(() => {
-        dispatch(fetchData())
+        dispatch(getDataProduct());
     }, []);
 
-    const addBasket = (product) => {
-        dispatch(actionBusket(product))
-    }
+    const handleAddToCart = (item, action) => {
+        dispatch(addProductBusket(item));
+        const updatedCounts = { ...productCounts };
+        if (action === 'increment') {
+            updatedCounts[item.id] = (updatedCounts[item.id] || 0) + 1;
+            dispatch(increment(1))
+        } else if (action === 'decrement' && updatedCounts[item.id] > 0) {
+            updatedCounts[item.id] -= 1;
+            dispatch(decremenet(1))
+        }        setProductCounts(updatedCounts);
+    };
+
 
     return (
-        <div>
-            <Navbar/>
-            <div className='main-card'>
-                {products?.map((product) => (
-                    <div className='product' key={product._id}>
-                        <img src={product.picture} alt=""/>
-                        <strong>{product.category}</strong>
-                        <h2>{product.name}</h2>
-                        <span>{product.description}</span>
-                        <div className='shop'>
-                            <h1>Цена:{product.price}</h1>
-                            <button onClick={() => addBasket(product)} className='buy'>Купить</button>
+        <div style={{ width: '1000px', gap: '20px', marginTop: '150px', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', margin: '20px auto' }}>
+            {products.products ? (
+                products.products.map((item) => (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', width: '200px', backgroundColor: 'silver', height: '300px', flexDirection: 'column' }} key={item.id}>
+                        <img style={{ width: '150px' }} src={item.images[0]} alt="" />
+                        <span>{item.title}</span>
+                        <h5>Price: {item.price}$</h5>
+                        <div style={{display:'flex'}}>
+                            <button onClick={() => handleAddToCart(item, 'increment')}>+</button>
+                            <p>Количество {productCounts[item.id] || 0}</p>
+                            <button onClick={() => {dispatch(removeBusketProduct(item.id)); handleAddToCart(item,'decrement')}}>-</button>
                         </div>
                     </div>
-                ))}
-            </div>
+                ))
+            ) : (
+                <div>
+                    <h2>LOADING...</h2>
+                </div>
+            )}
         </div>
     );
 };

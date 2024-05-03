@@ -1,12 +1,10 @@
-import {applyMiddleware, combineReducers, createStore} from "redux";
-import productReducer from "./products/productReducer/productReducer";
-import busketReducer from "./products/busketReducer/busketReducer";
-import {thunk} from "redux-thunk";
 
-const rootReduer = combineReducers({
-    productReducer,
-    busketReducer
+import {configureStore} from "@reduxjs/toolkit";
+import postSlice from "../components/features/postSlice";
+
+const store = configureStore({
+    reducer:{
+        postSlice
+    }
 })
-
-const store = createStore(rootReduer, applyMiddleware(thunk));
 export default store;

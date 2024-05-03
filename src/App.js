@@ -1,13 +1,13 @@
 import React from 'react';
 import Pages from "./components/pages/Pages";
-import {Provider} from "react-redux";
-import store from "./store/store";
+import Navbar from "./components/header/Navbar";
 
 const App = () => {
     return (
-        <Provider store={store}>
-            <Pages/>
-        </Provider>
+            <div >
+                <Navbar/>
+                <Pages/>
+            </div>
     );
 };
 
